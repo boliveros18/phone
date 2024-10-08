@@ -25,6 +25,7 @@ export const InBoundCall = () => {
     const user: any = session?.user;
     setUser(user);
     setIsLoading(true);
+    console.log("entra")
     getInboundCalls(1, true, sid, user.id, user.role)
       .then((inbounds) => {
         setPaginates(inbounds.slice(0, 6));
