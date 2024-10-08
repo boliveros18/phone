@@ -28,9 +28,9 @@ export const InBoundCall = () => {
       setIsLoading(false);
     });
   }, [sid, getInboundCalls]);
-  const [paginates, setPaginates] = useState<ICall[]>(inbounds.slice(0, 9));
+  const [paginates, setPaginates] = useState<ICall[]>(inbounds.slice(0, 6));
 
-  console.log(inbounds)
+  console.log(paginates)
 
   useEffect(() => {
     setInitialState();
