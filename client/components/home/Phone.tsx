@@ -114,7 +114,6 @@ export const Phone = () => {
   }, [Session]);
 
   useEffect(() => {
-    console.log("rep");
     setInitialState();
     credentials();
     checkConnection();
