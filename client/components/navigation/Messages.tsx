@@ -1,0 +1,146 @@
+import { FC, useState, useContext } from "react";
+import { PencilSquareIcon } from "@heroicons/react/24/outline";
+import { TwilioContext } from "@/context/twilio";
+import { UiContext } from "@/context/ui";
+import { Container } from "../ui/Container";
+import { SearchBar } from "../ui/SearchBar";
+import { Loading } from "../ui/Loading";
+import { Message } from "../ui/Message";
+import { InboxMessage } from "../ui/InboxMessage";
+import { TabContent } from "../ui/TabContent";
+import { Pagination } from "../ui/Pagination";
+
+interface Props {}
+
+export const Messages: FC<Props> = ({}) => {
+  const { 
+    filteredMessages,
+    preFilteredMessages,
+    messages,
+    getMessages,
+    newMessage,
+    setMessage,
+  } = useContext(TwilioContext);
+  const [pageNumber, setPageNumber] = useState(1);
+  const {
+    search,
+    inboxMessageToogle,
+    isLoading,
+    setIsLoading,
+    setInboxMessageToogle,
+    setTypeMessage,
+  } = useContext(UiContext);
+
+  const downClick = () => {
+    if (pageNumber >= 1) {
+      setIsLoading(true);
+      setPageNumber(pageNumber + 1);
+      getMessages(pageNumber + 1, false).finally(() => {
+        setIsLoading(false);
+      });
+    }
+  };
+
+  const upClick = () => {
+    if (pageNumber >= 1) {
+      setIsLoading(true);
+      setPageNumber(pageNumber - 1);
+      getMessages(pageNumber - 1, false).finally(() => {
+        setIsLoading(false);
+      });
+    }
+  };
+
+  return (
+    <Container title="Messages">
+      <TabContent>
+        {!inboxMessageToogle && (
+          <SearchBar type="messages" isLoading={isLoading} />
+        )}
+        {isLoading ? (
+          <div className="h-365">
+            <Loading />
+          </div>
+        ) : !inboxMessageToogle ? (
+          <>
+            {search ? (
+              <div className="h-420 overflow-y-scroll scrollbar-thin shadow-lg rounded-b-3xl">
+                {preFilteredMessages.length === filteredMessages.length
+                  ? preFilteredMessages.map((message: any) => (
+                      <Message
+                        key={message.sid}
+                        message={message}
+                        action={() => {
+                          message.unread = false;
+                          setMessage(message);
+                          setTypeMessage("open");
+                          setInboxMessageToogle(true);
+                        }}
+                      />
+                    ))
+                  : filteredMessages.map((message: any) => (
+                      <Message
+                        key={message.sid}
+                        message={message}
+                        action={() => {
+                          message.unread = false;
+                          setMessage(message);
+                          setTypeMessage("open");
+                          setInboxMessageToogle(true);
+                        }}
+                      />
+                    ))}
+              </div>
+            ) : (
+              <div className="h-365">
+                {messages.map((message: any) => (
+                  <Message
+                    key={message.sid}
+                    message={message}
+                    action={() => {
+                      message.unread = false;
+                      setMessage(message);
+                      setTypeMessage("open");
+                      setInboxMessageToogle(true);
+                    }}
+                  />
+                ))}
+                <div
+                  className="absolute bottom-24 right-6 bg-transparent"
+                  onClick={() => {
+                    setTypeMessage("new");
+                    setInboxMessageToogle(true);
+                  }}
+                >
+                  <div className="flex flex-none h-11 w-11 items-center justify-center rounded-full cursor-pointer bg-orange-200 hover:bg-orange-100">
+                    <PencilSquareIcon
+                      aria-hidden="true"
+                      className="h-6 w-6 text-blacks "
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+            <Pagination
+              pageNumber={pageNumber}
+              length={6}
+              upClick={upClick}
+              downClick={downClick}
+              items={preFilteredMessages}
+            />
+          </>
+        ) : (
+          <InboxMessage
+            message={newMessage}
+            backClick={() => {
+              setInboxMessageToogle(false);
+              setTypeMessage("");
+            }}
+            setMessage={setMessage}
+            back={true}
+          />
+        )}
+      </TabContent>
+    </Container>
+  );
+};
