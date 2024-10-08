@@ -12,22 +12,20 @@ import { getSession } from "next-auth/react";
 import { UsersIcon } from "@heroicons/react/24/outline";
 
 export const History = () => {
-  const { filteredCalls, preFilteredCalls, calls, getCalls } =
-    useContext(TwilioContext);
+  const { filteredCalls, calls, getCalls } = useContext(TwilioContext);
   const [pageNumber, setPageNumber] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const { search, sid, setSid } = useContext(UiContext);
   const [user, setUser] = useState<any>();
+  const [paginates, setPaginates] = useState<ICall[]>(calls.slice(0, 6));
 
   const setInitialState = useCallback(async () => {
     const session = await getSession();
     const user: any = session?.user;
     setUser(user);
-    setIsLoading(true); 
-    getCalls(1, false, sid, user.id, user.role).finally(() => {
-      getCalls(1, true, sid, user.id, user.role).finally(() => {
-        setIsLoading(false);
-      });
+    setIsLoading(true);
+    getCalls(1, true, sid, user.id, user.role).finally(() => {
+      setIsLoading(false);
     });
   }, [sid, getCalls]);
 
@@ -35,23 +33,23 @@ export const History = () => {
     setInitialState();
   }, [setInitialState]);
 
+  const pagination = (pageNumber: number, pageSize: number) => {
+    const start = (pageNumber - 1) * pageSize;
+    const end = start + pageSize;
+    return calls.slice(start, end);
+  };
+
   const downClick = () => {
     if (pageNumber >= 1) {
-      setIsLoading(true);
       setPageNumber(pageNumber + 1);
-      getCalls(pageNumber + 1, false, sid, user.id, user.role).finally(() => {
-        setIsLoading(false);
-      });
+      setPaginates(pagination(pageNumber + 1, 6));
     }
   };
 
   const upClick = () => {
     if (pageNumber >= 1) {
-      setIsLoading(true);
       setPageNumber(pageNumber - 1);
-      getCalls(pageNumber - 1, false, sid, user.id, user.role).finally(() => {
-        setIsLoading(false);
-      });
+      setPaginates(pagination(pageNumber - 1, 6));
     }
   };
 
@@ -72,17 +70,13 @@ export const History = () => {
           </div>
         ) : search ? (
           <div className="h-420 overflow-y-scroll scrollbar-thin shadow-lg rounded-b-3xl">
-            {preFilteredCalls.length === filteredCalls.length
-              ? preFilteredCalls.map((call: ICall) => (
-                  <Call key={call.sid} call={call} user={user} />
-                ))
-              : filteredCalls.map((call: ICall) => (
+            {filteredCalls.map((call: ICall) => (
                   <Call key={call.sid} call={call} user={user} />
                 ))}
           </div>
         ) : (
           <div className="h-365">
-            {calls.map((call: ICall) => (
+            {paginates.map((call: ICall) => (
               <Call key={call.sid} call={call} user={user} />
             ))}
           </div>
@@ -92,7 +86,7 @@ export const History = () => {
           length={6}
           upClick={upClick}
           downClick={downClick}
-          items={preFilteredCalls}
+          items={filteredCalls}
         />
       </TabContent>
     </Container>

@@ -30,9 +30,6 @@ export const InBoundCall = () => {
     });
   }, [sid, getInboundCalls]);
 
-
-  console.log(paginates);
-
   useEffect(() => {
     setInitialState();
   }, [setInitialState]);
