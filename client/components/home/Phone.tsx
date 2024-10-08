@@ -36,13 +36,15 @@ export const Phone = () => {
     });
   }, []);
 
-  const beforeUnload = useCallback((id: string) => {
+  const beforeUnload = useCallback(() => {
 
     window.addEventListener("beforeunload", async (event)=>{
       event.preventDefault()
-      await TwilioService.updateOfflineStatus(id);
+      const session = await getSession();
+      const user: any = session?.user;
+      await TwilioService.updateOfflineStatus(user.id);
       signOut();
-      console.log("sale")
+      console.log(user)
     })
     /*
     const messageHandler = async (event: MessageEvent) => {
@@ -131,7 +133,7 @@ export const Phone = () => {
     setInitialState();
     credentials();
     checkConnection();
-    beforeUnload(user?.id);
+    beforeUnload();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [beforeUnload]);
 
