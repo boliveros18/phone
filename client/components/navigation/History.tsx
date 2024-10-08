@@ -17,16 +17,20 @@ export const History = () => {
   const [isLoading, setIsLoading] = useState(true);
   const { search, sid, setSid } = useContext(UiContext);
   const [user, setUser] = useState<any>();
-  const [paginates, setPaginates] = useState<ICall[]>(calls.slice(0, 6));
+  const [paginates, setPaginates] = useState<ICall[]>();
 
   const setInitialState = useCallback(async () => {
     const session = await getSession();
     const user: any = session?.user;
     setUser(user);
     setIsLoading(true);
-    getCalls(1, true, sid, user.id, user.role).finally(() => {
-      setIsLoading(false);
-    });
+    getCalls(1, true, sid, user.id, user.role)
+      .then((calls) => {
+        setPaginates(calls.slice(0, 6));
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   }, [sid, getCalls]);
 
   useEffect(() => {
@@ -71,12 +75,12 @@ export const History = () => {
         ) : search ? (
           <div className="h-420 overflow-y-scroll scrollbar-thin shadow-lg rounded-b-3xl">
             {filteredCalls.map((call: ICall) => (
-                  <Call key={call.sid} call={call} user={user} />
-                ))}
+              <Call key={call.sid} call={call} user={user} />
+            ))}
           </div>
         ) : (
           <div className="h-365">
-            {paginates.map((call: ICall) => (
+            {paginates?.map((call: ICall) => (
               <Call key={call.sid} call={call} user={user} />
             ))}
           </div>

@@ -14,14 +14,13 @@ import { IMessage } from "@/interfaces";
 interface Props {}
 
 export const Messages: FC<Props> = ({}) => {
-  const { filteredMessages, messages, getMessages, newMessage, setMessage } =
+  const { filteredMessages, messages, newMessage, setMessage } =
     useContext(TwilioContext);
   const [pageNumber, setPageNumber] = useState(1);
   const {
     search,
     inboxMessageToogle,
     isLoading,
-    setIsLoading,
     setInboxMessageToogle,
     setTypeMessage,
   } = useContext(UiContext);
@@ -62,17 +61,17 @@ export const Messages: FC<Props> = ({}) => {
             {search ? (
               <div className="h-420 overflow-y-scroll scrollbar-thin shadow-lg rounded-b-3xl">
                 {filteredMessages.map((message: any) => (
-                      <Message
-                        key={message.sid}
-                        message={message}
-                        action={() => {
-                          message.unread = false;
-                          setMessage(message);
-                          setTypeMessage("open");
-                          setInboxMessageToogle(true);
-                        }}
-                      />
-                    ))}
+                  <Message
+                    key={message.sid}
+                    message={message}
+                    action={() => {
+                      message.unread = false;
+                      setMessage(message);
+                      setTypeMessage("open");
+                      setInboxMessageToogle(true);
+                    }}
+                  />
+                ))}
               </div>
             ) : (
               <div className="h-365">

@@ -19,24 +19,25 @@ interface Props {
 }
 
 export const RecordList: FC<Props> = ({ title, type, verb, records }) => {
-  const { filteredRecordings, getRecordings } =
-    useContext(TwilioContext);
+  const { filteredRecordings, getRecordings } = useContext(TwilioContext);
   const [pageNumber, setPageNumber] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const { search, sid, setSid } = useContext(UiContext);
   const [user, setUser] = useState<any>();
-  const [paginates, setPaginates] = useState<IRecording[]>(
-    records.slice(0, 6)
-  );
+  const [paginates, setPaginates] = useState<IRecording[]>(records.slice(0, 6));
 
   const setInitialState = useCallback(async () => {
     const session = await getSession();
     const user: any = session?.user;
     setUser(user);
     setIsLoading(true);
-    getRecordings(verb, 1, true, sid, user.id, user.role).finally(() => {
-      setIsLoading(false);
-    });
+    getRecordings(verb, 1, true, sid, user.id, user.role)
+      .then((recordings) => {
+        setPaginates(recordings.slice(0, 6));
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   }, [sid, verb, getRecordings, setUser]);
 
   useEffect(() => {
