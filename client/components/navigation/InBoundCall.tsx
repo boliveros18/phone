@@ -11,7 +11,7 @@ import { Pagination } from "../ui/Pagination";
 import { UsersIcon } from "@heroicons/react/24/outline";
 import { getSession } from "next-auth/react"; 
 
-export const InBoundCall = () => { 
+export const InBoundCall = () => {
   const { filteredCalls, inbounds, getInboundCalls } =
     useContext(TwilioContext);
   const [pageNumber, setPageNumber] = useState(1);
@@ -29,6 +29,8 @@ export const InBoundCall = () => {
     });
   }, [sid, getInboundCalls]);
   const [paginates, setPaginates] = useState<ICall[]>(inbounds.slice(0, 9));
+
+  console.log(inbounds)
 
   useEffect(() => {
     setInitialState();
