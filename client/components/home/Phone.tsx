@@ -18,7 +18,7 @@ export const Phone = () => {
   const { getMessages } = useContext(TwilioContext);
   const { isLoading, setIsLoading } = useContext(UiContext);
   const { getUserSession, createUser } = useContext(UserContext);
-  const [ user, setUser] = useState<any>();
+  const [user, setUser] = useState<any>();
 
   const setInitialState = useCallback(() => {
     setIsLoading(true);
@@ -37,29 +37,13 @@ export const Phone = () => {
   }, []);
 
   const beforeUnload = useCallback(() => {
-
-    window.addEventListener("beforeunload", async (event)=>{
-      event.preventDefault()
+    window.addEventListener("beforeunload", async (event) => {
+      event.preventDefault();
       const session = await getSession();
       const user: any = session?.user;
       await TwilioService.updateOfflineStatus(user.id);
       signOut();
-      console.log(user)
-    })
-    /*
-    const messageHandler = async (event: MessageEvent) => {
-      if (event.data.unload) {
-        const session = await getSession();
-        const user: any = session?.user;
-        await TwilioService.updateOfflineStatus(user?.id || "");
-        signOut();
-      }
-    };
-    window.addEventListener("message", messageHandler);
-    return () => {
-      window.removeEventListener("message", messageHandler);
-    };
-    */
+    });
   }, []);
 
   const Session = useCallback(
@@ -130,12 +114,12 @@ export const Phone = () => {
   }, [Session]);
 
   useEffect(() => {
+    console.log("rep");
     setInitialState();
     credentials();
     checkConnection();
     beforeUnload();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [beforeUnload]);
+  }, [beforeUnload, setInitialState, credentials, checkConnection]);
 
   return (
     <div className={exo.className}>
