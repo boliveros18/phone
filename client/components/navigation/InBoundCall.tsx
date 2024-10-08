@@ -9,7 +9,7 @@ import { Call } from "../ui/Call";
 import { TabContent } from "../ui/TabContent";
 import { Pagination } from "../ui/Pagination";
 import { UsersIcon } from "@heroicons/react/24/outline";
-import { getSession } from "next-auth/react"; 
+import { getSession } from "next-auth/react";
 
 export const InBoundCall = () => {
   const { filteredCalls, inbounds, getInboundCalls } =
@@ -18,6 +18,7 @@ export const InBoundCall = () => {
   const [isLoading, setIsLoading] = useState(true);
   const { search, sid, setSid } = useContext(UiContext);
   const [user, setUser] = useState<any>();
+  const [paginates, setPaginates] = useState<ICall[]>(inbounds.slice(0, 6));
 
   const setInitialState = useCallback(async () => {
     const session = await getSession();
@@ -28,9 +29,9 @@ export const InBoundCall = () => {
       setIsLoading(false);
     });
   }, [sid, getInboundCalls]);
-  const [paginates, setPaginates] = useState<ICall[]>(inbounds.slice(0, 6));
 
-  console.log(paginates)
+
+  console.log(paginates);
 
   useEffect(() => {
     setInitialState();
