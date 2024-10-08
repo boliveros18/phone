@@ -9,18 +9,13 @@ import { Message } from "../ui/Message";
 import { InboxMessage } from "../ui/InboxMessage";
 import { TabContent } from "../ui/TabContent";
 import { Pagination } from "../ui/Pagination";
+import { IMessage } from "@/interfaces";
 
 interface Props {}
 
 export const Messages: FC<Props> = ({}) => {
-  const { 
-    filteredMessages,
-    preFilteredMessages,
-    messages,
-    getMessages,
-    newMessage,
-    setMessage,
-  } = useContext(TwilioContext);
+  const { filteredMessages, messages, getMessages, newMessage, setMessage } =
+    useContext(TwilioContext);
   const [pageNumber, setPageNumber] = useState(1);
   const {
     search,
@@ -30,24 +25,25 @@ export const Messages: FC<Props> = ({}) => {
     setInboxMessageToogle,
     setTypeMessage,
   } = useContext(UiContext);
+  const [paginates, setPaginates] = useState<IMessage[]>(messages.slice(0, 6));
+
+  const pagination = (pageNumber: number, pageSize: number) => {
+    const start = (pageNumber - 1) * pageSize;
+    const end = start + pageSize;
+    return messages.slice(start, end);
+  };
 
   const downClick = () => {
     if (pageNumber >= 1) {
-      setIsLoading(true);
       setPageNumber(pageNumber + 1);
-      getMessages(pageNumber + 1, false).finally(() => {
-        setIsLoading(false);
-      });
+      setPaginates(pagination(pageNumber + 1, 6));
     }
   };
 
   const upClick = () => {
     if (pageNumber >= 1) {
-      setIsLoading(true);
       setPageNumber(pageNumber - 1);
-      getMessages(pageNumber - 1, false).finally(() => {
-        setIsLoading(false);
-      });
+      setPaginates(pagination(pageNumber - 1, 6));
     }
   };
 
@@ -65,20 +61,7 @@ export const Messages: FC<Props> = ({}) => {
           <>
             {search ? (
               <div className="h-420 overflow-y-scroll scrollbar-thin shadow-lg rounded-b-3xl">
-                {preFilteredMessages.length === filteredMessages.length
-                  ? preFilteredMessages.map((message: any) => (
-                      <Message
-                        key={message.sid}
-                        message={message}
-                        action={() => {
-                          message.unread = false;
-                          setMessage(message);
-                          setTypeMessage("open");
-                          setInboxMessageToogle(true);
-                        }}
-                      />
-                    ))
-                  : filteredMessages.map((message: any) => (
+                {filteredMessages.map((message: any) => (
                       <Message
                         key={message.sid}
                         message={message}
@@ -93,7 +76,7 @@ export const Messages: FC<Props> = ({}) => {
               </div>
             ) : (
               <div className="h-365">
-                {messages.map((message: any) => (
+                {paginates.map((message: any) => (
                   <Message
                     key={message.sid}
                     message={message}
@@ -126,7 +109,7 @@ export const Messages: FC<Props> = ({}) => {
               length={6}
               upClick={upClick}
               downClick={downClick}
-              items={preFilteredMessages}
+              items={filteredMessages}
             />
           </>
         ) : (
