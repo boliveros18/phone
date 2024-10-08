@@ -19,14 +19,14 @@ interface Props {
 }
 
 export const RecordList: FC<Props> = ({ title, type, verb, records }) => {
-  const { filteredRecordings, recordings, getRecordings } =
+  const { filteredRecordings, getRecordings } =
     useContext(TwilioContext);
   const [pageNumber, setPageNumber] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const { search, sid, setSid } = useContext(UiContext);
   const [user, setUser] = useState<any>();
   const [paginates, setPaginates] = useState<IRecording[]>(
-    recordings.slice(0, 6)
+    records.slice(0, 6)
   );
 
   const setInitialState = useCallback(async () => {
@@ -46,7 +46,7 @@ export const RecordList: FC<Props> = ({ title, type, verb, records }) => {
   const pagination = (pageNumber: number, pageSize: number) => {
     const start = (pageNumber - 1) * pageSize;
     const end = start + pageSize;
-    return recordings.slice(start, end);
+    return records.slice(start, end);
   };
 
   const downClick = () => {
