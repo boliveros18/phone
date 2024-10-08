@@ -26,9 +26,9 @@ export const InBoundCall = () => {
     setUser(user);
     setIsLoading(true);
     getInboundCalls(1, true, sid, user.id, user.role).finally(() => {
+      setPaginates(inbounds.slice(0, 6));
       setIsLoading(false);
     });
-    setPaginates(inbounds.slice(0, 6))
   }, [sid, inbounds, getInboundCalls]);
 
   useEffect(() => {
