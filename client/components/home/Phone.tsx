@@ -22,10 +22,8 @@ export const Phone = () => {
 
   const setInitialState = useCallback(() => {
     setIsLoading(true);
-    getMessages(1, false).finally(() => {
-      getMessages(1, true).finally(() => {
-        setIsLoading(false);
-      });
+    getMessages(1, true).finally(() => {
+      setIsLoading(false);
     });
   }, [getMessages, setIsLoading]);
 
@@ -41,6 +39,7 @@ export const Phone = () => {
   const beforeUnload = useCallback(() => {
     const messageHandler = async (event: MessageEvent) => {
       if (event.data.unload) {
+        console.log(user)
         await TwilioService.updateOfflineStatus(user?.id || "");
         signOut();
       }
