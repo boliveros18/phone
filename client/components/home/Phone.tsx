@@ -7,7 +7,7 @@ import { TwilioContext } from "@/context/twilio";
 import { UserContext } from "@/context/user";
 import { UiContext } from "@/context/ui";
 import { Loading } from "../ui/Loading";
-import { signIn, signOut } from "next-auth/react";
+import { signIn, signOut, getSession } from "next-auth/react";
 import { TwilioService } from "@/services";
 
 const exo = Exo({
@@ -17,8 +17,8 @@ const exo = Exo({
 export const Phone = () => {
   const { getMessages } = useContext(TwilioContext);
   const { isLoading, setIsLoading } = useContext(UiContext);
-  const { user, getUserSession, createUser } = useContext(UserContext);
-  const [_user, setUser] = useState<any>();
+  const { getUserSession, createUser } = useContext(UserContext);
+  const [ user, setUser] = useState<any>();
 
   const setInitialState = useCallback(() => {
     setIsLoading(true);
@@ -39,6 +39,8 @@ export const Phone = () => {
   const beforeUnload = useCallback(() => {
     const messageHandler = async (event: MessageEvent) => {
       if (event.data.unload) {
+        const session = await getSession();
+        const user: any = session?.user;
         console.log(user)
         await TwilioService.updateOfflineStatus(user?.id || "");
         signOut();
@@ -48,7 +50,7 @@ export const Phone = () => {
     return () => {
       window.removeEventListener("message", messageHandler);
     };
-  }, [user]);
+  }, []);
 
   const Session = useCallback(
     async (
@@ -133,8 +135,8 @@ export const Phone = () => {
             <Loading />
           </>
         ) : (
-          <AccountLayout user={_user}>
-            <TabGroupUi role={_user?.role} />
+          <AccountLayout user={user}>
+            <TabGroupUi role={user?.role} />
           </AccountLayout>
         )}
       </Layout>
