@@ -18,7 +18,7 @@ export const Phone = () => {
   const { getMessages } = useContext(TwilioContext);
   const { isLoading, setIsLoading } = useContext(UiContext);
   const { getUserSession, createUser } = useContext(UserContext);
-  const [ user, setUser] = useState<any>();
+  const [user, setUser] = useState<any>();
 
   const setInitialState = useCallback(() => {
     setIsLoading(true);
@@ -36,13 +36,10 @@ export const Phone = () => {
     });
   }, []);
 
-  const beforeUnload = useCallback(() => {
+  const beforeUnload = useCallback((id: string) => {
     const messageHandler = async (event: MessageEvent) => {
       if (event.data.unload) {
-        const session = await getSession();
-        const user: any = session?.user;
-        console.log(user)
-        await TwilioService.updateOfflineStatus(user?.id || "");
+        await TwilioService.updateOfflineStatus(id);
         signOut();
       }
     };
@@ -123,7 +120,7 @@ export const Phone = () => {
     setInitialState();
     credentials();
     checkConnection();
-    beforeUnload();
+    beforeUnload(user?.id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
