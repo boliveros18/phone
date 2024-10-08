@@ -10,7 +10,7 @@ import { Pagination } from "./Pagination";
 import { UsersIcon } from "@heroicons/react/24/outline";
 import { Container } from "./Container";
 import { getSession } from "next-auth/react";
- 
+
 interface Props {
   title: string;
   type: string;
@@ -19,36 +19,23 @@ interface Props {
 }
 
 export const RecordList: FC<Props> = ({ title, type, verb, records }) => {
-  const { filteredRecordings, preFilteredRecordings, getRecordings } =
+  const { filteredRecordings, recordings, getRecordings } =
     useContext(TwilioContext);
   const [pageNumber, setPageNumber] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const { search, sid, setSid } = useContext(UiContext);
   const [user, setUser] = useState<any>();
+  const [paginates, setPaginates] = useState<IRecording[]>(
+    recordings.slice(0, 6)
+  );
 
   const setInitialState = useCallback(async () => {
     const session = await getSession();
-    const user: any = session?.user
+    const user: any = session?.user;
     setUser(user);
     setIsLoading(true);
-    getRecordings(
-      verb,
-      1,
-      false,
-      sid,
-      user.id,
-      user.role
-    ).finally(() => {
-      getRecordings(
-        verb,
-        1,
-        true,
-        sid,
-        user.id,
-        user.role
-      ).finally(() => {
-        setIsLoading(false);
-      });
+    getRecordings(verb, 1, true, sid, user.id, user.role).finally(() => {
+      setIsLoading(false);
     });
   }, [sid, verb, getRecordings, setUser]);
 
@@ -56,26 +43,25 @@ export const RecordList: FC<Props> = ({ title, type, verb, records }) => {
     setInitialState();
   }, [setInitialState]);
 
+  const pagination = (pageNumber: number, pageSize: number) => {
+    const start = (pageNumber - 1) * pageSize;
+    const end = start + pageSize;
+    return recordings.slice(start, end);
+  };
+
   const downClick = () => {
     if (pageNumber >= 1) {
-      setIsLoading(true);
       setPageNumber(pageNumber + 1);
-      getRecordings(verb, pageNumber + 1, false, sid,  user.id, user.role).finally(() => {
-        setIsLoading(false);
-      });
+      setPaginates(pagination(pageNumber + 1, 6));
     }
   };
 
   const upClick = () => {
     if (pageNumber >= 1) {
-      setIsLoading(true);
       setPageNumber(pageNumber - 1);
-      getRecordings(verb, pageNumber - 1, false, sid,  user.id, user.role).finally(() => {
-        setIsLoading(false);
-      });
+      setPaginates(pagination(pageNumber - 1, 6));
     }
   };
-
   return (
     <Container
       title={title}
@@ -93,17 +79,13 @@ export const RecordList: FC<Props> = ({ title, type, verb, records }) => {
           </div>
         ) : search ? (
           <div className="h-420 overflow-y-scroll scrollbar-thin shadow-lg rounded-b-3xl overflow-x-hidden">
-            {preFilteredRecordings.length === filteredRecordings.length
-              ? preFilteredRecordings.map((recording: IRecording) => (
-                  <Record key={recording.sid} recording={recording} user={user} />
-                ))
-              : filteredRecordings.map((recording: IRecording) => (
-                  <Record key={recording.sid} recording={recording} user={user} />
-                ))}
+            {filteredRecordings.map((recording: IRecording) => (
+              <Record key={recording.sid} recording={recording} user={user} />
+            ))}
           </div>
         ) : (
           <div className="h-365">
-            {records.map((recording: IRecording) => (
+            {paginates.map((recording: IRecording) => (
               <Record key={recording.sid} recording={recording} user={user} />
             ))}
           </div>
@@ -113,7 +95,7 @@ export const RecordList: FC<Props> = ({ title, type, verb, records }) => {
           length={6}
           upClick={upClick}
           downClick={downClick}
-          items={preFilteredRecordings}
+          items={filteredRecordings}
         />
       </TabContent>
     </Container>
