@@ -18,7 +18,7 @@ export const InBoundCall = () => {
   const [isLoading, setIsLoading] = useState(true);
   const { search, sid, setSid } = useContext(UiContext);
   const [user, setUser] = useState<any>();
-  const [paginates, setPaginates] = useState<ICall[]>(inbounds.slice(0, 6));
+  const [paginates, setPaginates] = useState<ICall[]>();
 
   const setInitialState = useCallback(async () => {
     const session = await getSession();
@@ -28,7 +28,8 @@ export const InBoundCall = () => {
     getInboundCalls(1, true, sid, user.id, user.role).finally(() => {
       setIsLoading(false);
     });
-  }, [sid, getInboundCalls]);
+    setPaginates(inbounds.slice(0, 6))
+  }, [sid, inbounds, getInboundCalls]);
 
   useEffect(() => {
     setInitialState();
@@ -77,7 +78,7 @@ export const InBoundCall = () => {
           </div>
         ) : (
           <div className="h-365">
-            {paginates.map((call: ICall) => (
+            {paginates?.map((call: ICall) => (
               <Call key={call.sid} call={call} user={user} />
             ))}
           </div>
