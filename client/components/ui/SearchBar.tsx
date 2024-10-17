@@ -4,7 +4,7 @@ import { StagingContext } from "@/context/staging";
 import { UserContext } from "@/context/user";
 import { TwilioContext } from "@/context/twilio";
 import { UiContext } from "@/context/ui";
-import { ICall, IContact, IMessage, IRecording } from "@/interfaces";
+import { ICall, IContact, IMessage, IRecording, IUser } from "@/interfaces";
 
 interface Props {
   type: string;
@@ -13,7 +13,7 @@ interface Props {
 
 export const SearchBar: FC<Props> = ({ type, isLoading }) => {
   const { contacts, setFilteredContacts } = useContext(StagingContext);
-  const { users, getUsersByFilter, setFilteredUsers } = useContext(UserContext);
+  const { users, setFilteredUsers } = useContext(UserContext);
   const { setSearch } = useContext(UiContext);
   const {
     recordings,
@@ -30,11 +30,6 @@ export const SearchBar: FC<Props> = ({ type, isLoading }) => {
     setSearch(false);
     setFocus(false);
     setInputs("");
-    switch (type) {
-      case "users":
-        setFilteredUsers(users);
-        break;
-    }
   };
 
   const handleInput = async ({ target }: ChangeEvent<any>) => {
@@ -47,7 +42,18 @@ export const SearchBar: FC<Props> = ({ type, isLoading }) => {
     setInputs(value);
     switch (type) {
       case "users":
-        getUsersByFilter(value);
+        setFilteredUsers(
+          users.filter(
+            (user: IUser) =>
+              user.name?.toLowerCase().includes(value) ||
+              user.lastname?.toLowerCase().includes(value) ||
+              user.phone?.includes(value) ||
+              user.fax?.includes(value) ||
+              user.email?.includes(value) ||
+              user.role?.includes(value) ||
+              user.status?.includes(value)
+          )
+        );
         break;
       case "contacts":
         setFilteredContacts(

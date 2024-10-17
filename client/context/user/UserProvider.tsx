@@ -22,32 +22,18 @@ const INITIAL_STATE: State = {
 export const UserProvider: FC<Props> = ({ children }) => {
   const [state, dispatch] = useReducer(userReducer, INITIAL_STATE);
 
-  const getUserById = useCallback(async (id: string) => {
-    const data = await UserService.getUserById(id);
-    return data;
-  }, []);
-
-  const getUserSession = useCallback(async (id: string) => {
-    const data: any = await UserService.getUserSession(id);
-    dispatch({ type: "SET_USER", payload: {...data, id: data.sid} });
-    return data;
-  }, []);
-
   const createUser = useCallback(async (payload: IUser) => {
     const data = await UserService.createUser(payload);
     return data;
   }, []);
 
-  const updateUser = useCallback(async (id: string, payload: IUser) => {
-    await UserService.updateUser(id, payload);
-  }, []);
-
-  const updateUserStatus = useCallback(async (status: string, id?: string) => {
+  const updateUserStatus = useCallback(async (status: string) => {
     await UserService.updateUserStatus(status);
   }, []);
 
-  const deleteUser = useCallback(async (id: string) => {
-    await UserService.deleteUser(id);
+  const getUserById = useCallback(async (id: string) => {
+    const data = await UserService.getUserById(id);
+    return data;
   }, []);
 
   const getUsers = useCallback(async () => {
@@ -61,35 +47,15 @@ export const UserProvider: FC<Props> = ({ children }) => {
     dispatch({ type: "SET_FILTERED_USERS", payload: users });
   }, []);
 
-  const getUsersByFilter = useCallback(async (filter: string) => {
-    const data = await UserService.getUsersByFilter(filter);
-    dispatch({ type: "SET_FILTERED_USERS", payload: data });
-    return data;
-  }, []);
-
-  const getPaginateUsers = useCallback(
-    async (pageNumber: number, lastUsername?: string) => {
-      const data = await UserService.getPaginateUsers(pageNumber, lastUsername);
-      dispatch({ type: "SET_USERS", payload: data });
-      return data;
-    },
-    []
-  );
-
   return (
     <UserContext.Provider
       value={{
         ...state,
-        getUserById,
-        getUserSession,
         createUser,
-        updateUser,
-        deleteUser,
-        getUsers,
         updateUserStatus,
+        getUserById,
+        getUsers,
         setFilteredUsers,
-        getUsersByFilter,
-        getPaginateUsers,
       }}
     >
       {children}

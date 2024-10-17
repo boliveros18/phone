@@ -6,18 +6,10 @@ interface ContextProps {
   users: IUser[];
   filteredUsers: IUser[];
   getUserById: (id: string) => Promise<IUser | {}>;
-  getUserSession: (id: string) => Promise<IUser | {}>;
   createUser: (payload: IUser) => Promise<IUser | {}>;
-  updateUser: (id: string, payload: IUser) => void;
-  deleteUser: (id: string) => void;
-  getUsers: () => Promise<IUser[] | []>;
   updateUserStatus: (status: string) => void;
+  getUsers: () => Promise<IUser[] | []>;
   setFilteredUsers: (users: IUser[]) => void;
-  getUsersByFilter: (filter: string) => Promise<IUser[] | []>;
-  getPaginateUsers: (
-    pageNumber: number,
-    lastUsername?: string
-  ) => Promise<IUser[] | []>;
 }
 
 export const UserContext = createContext({} as ContextProps);

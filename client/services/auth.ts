@@ -26,7 +26,7 @@ export const authenticateUser = async (
 ) => {
   try {
     const response = await ApiServer.post(
-      "/twilio/login",
+      "/users/auth",
       {
         id: id,
         token: token,

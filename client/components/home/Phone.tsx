@@ -7,8 +7,8 @@ import { TwilioContext } from "@/context/twilio";
 import { UserContext } from "@/context/user";
 import { UiContext } from "@/context/ui";
 import { Loading } from "../ui/Loading";
-import { signIn, signOut, getSession } from "next-auth/react";
-import { TwilioService } from "@/services";
+import { signIn, signOut } from "next-auth/react";
+import { UserService } from "@/services";
 
 const exo = Exo({
   subsets: ["latin"],
@@ -17,7 +17,7 @@ const exo = Exo({
 export const Phone = () => {
   const { getMessages } = useContext(TwilioContext);
   const { isLoading, setIsLoading } = useContext(UiContext);
-  const { getUserSession, createUser } = useContext(UserContext);
+  const { getUserById, createUser } = useContext(UserContext);
   const [user, setUser] = useState<any>();
 
   const setInitialState = useCallback(() => {
@@ -39,9 +39,7 @@ export const Phone = () => {
   const beforeUnload = useCallback(() => {
     window.addEventListener("beforeunload", async (event) => {
       event.preventDefault();
-      const session = await getSession();
-      const user: any = session?.user;
-      await TwilioService.updateOfflineStatus(user.id);
+      await UserService.updateUserStatus("offline");
       signOut();
     });
   }, []);
@@ -57,8 +55,8 @@ export const Phone = () => {
       email: string,
       role: string
     ) => {
-      const _user: any = await getUserSession(id);
-      if (_user.sid === id) {
+      const _user: any = await getUserById(id);
+      if (_user.id === id) {
         await signIn("credentials", {
           id,
           token,
@@ -79,7 +77,7 @@ export const Phone = () => {
           email: email,
           role: role,
           sid: id,
-          status: "",
+          status: "offline",
         }).then(async (user: any) => {
           const id = user.sid;
           await signIn("credentials", {
@@ -96,7 +94,7 @@ export const Phone = () => {
         });
       }
     },
-    [createUser, getUserSession]
+    [createUser, getUserById]
   );
   const credentials = useCallback(() => {
     const messageHandler = async (event: MessageEvent) => {

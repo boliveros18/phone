@@ -1,4 +1,3 @@
-import { IUser } from "@/interfaces";
 import {
   Squares2X2Icon,
   PhoneArrowDownLeftIcon,
@@ -47,40 +46,15 @@ export const footer: string[] = [
   "\u00A0",
 ];
 
-export const convertToUserObject = (params: string): IUser => {
-  const object = {
-    id: "",
-    sid: "",
-    token: "",
-    name: "",
-    lastname: "",
-    phone: "",
-    fax: "",
-    email: "",
-    role: "",
-  };
-  const pairs = params.split(",");
-
-  pairs.forEach((pair) => {
-    const [key, value] = pair.split(":").map((item) => item.trim());
-
-    if (key in object) {
-      (object as IUser)[key as keyof IUser] = value;
-    }
-  });
-
-  return object as IUser;
-};
-
 export const userInitials = {
-  id: "dbsd6yhrdbndj5j",
-  token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoidGVsZXBob255IiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvZW1haWxhZGRyZXNzIjoidGVsZXBob255QGRscy1pbnMuY29tIiwianRpIjoiODAxMGI1NTctZTc0MC00NGVmLThjN2UtYzdiYzVmN2FlZGIxIiwiY29udGFjdElkIjoiZjlkMjZlZmQtNGJkYi00ODJjLWE0OGUtOWJlMTQ3ODhlOGUyIiwiT1JHIjoiRExTIiwiY2xhaW1zIjoidmlldy5Db250YWN0UGhvbmUiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJBZ2VudCIsImV4cCI6MTcyODM0OTI4OCwiaXNzIjoiRGxzSWRlbnRpdHlBcGkiLCJhdWQiOiJodHRwczovL2xvY2FsaG9zdDo0NDM0NCJ9.XTCrJ7MfIg8d8fo56Z7oXS5K9xtQTBnGB2paLcpwjw8",
-  name: "maria",
-  lastname: "lozano",
-  phone: "_",
-  fax: "_",
-  email: "_",
-  role: "_",
+  id: "",
+  token: "",
+  name: "",
+  lastname: "",
+  phone: "",
+  fax: "",
+  email: "",
+  role: "",
 };
 
 export const tabs = [
@@ -155,16 +129,5 @@ export const tabs = [
       number: 0,
     },
     icon: ChatBubbleLeftEllipsisIcon,
-  },
-  /*
-  {
-    name: "Faxing",
-    notification: {
-      display: true,
-      open: false,
-      number: 1,
-    },
-    icon: DocumentArrowUpIcon,
-  },
-  */
+  }
 ];
