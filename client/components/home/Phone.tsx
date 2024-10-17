@@ -56,7 +56,7 @@ export const Phone = () => {
       role: string
     ) => {
       const _user: any = await getUserById(id);
-      if (_user.id === id) {
+      if (_user.sid === id) {
         await signIn("credentials", {
           id,
           token,
