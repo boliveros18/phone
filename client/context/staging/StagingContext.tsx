@@ -3,13 +3,12 @@ import { createContext } from "react";
 
 interface ContextProps {
   contacts: IContact[];
+  paginates: IContact[];
   filteredContacts: IContact[];
-  setFilteredContacts: (calls: IContact[]) => void;
+  setPaginates: (contacts: IContact[]) => void;
+  setFilteredContacts: (contacts: IContact[]) => void;
   getContacts: (
-    token: string,
-    pageNumber: number,
-    pageSize: number,
-    filter?: string
+    token: string
   ) => Promise<IContact[] | []>;
 }
 

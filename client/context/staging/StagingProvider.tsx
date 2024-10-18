@@ -7,6 +7,7 @@ import { userInitials } from "../../utils/strings";
 export interface State {
   account: IUser;
   contacts: IContact[];
+  paginates: IContact[];
   filteredContacts: IContact[];
 }
 
@@ -17,11 +18,16 @@ interface Props {
 const INITIAL_STATE: State = {
   account: userInitials,
   contacts: [],
+  paginates: [],
   filteredContacts: [],
 };
 
 export const StagingProvider: FC<Props> = ({ children }) => {
   const [state, dispatch] = useReducer(stagingReducer, INITIAL_STATE);
+
+  const setPaginates = useCallback((contacts: IContact[]) => {
+    dispatch({ type: "SET_PAGINATES", payload: contacts });
+  }, []);
 
   const setFilteredContacts = useCallback((contacts: IContact[]) => {
     dispatch({ type: "SET_FILTERED_CONTACTS", payload: contacts });
@@ -29,16 +35,10 @@ export const StagingProvider: FC<Props> = ({ children }) => {
 
   const getContacts = useCallback(
     async (
-      token: string,
-      pageNumber: number,
-      pageSize: number,
-      filter?: string
+      token: string
     ) => {
       const response = await ContactService.fetchContactInfo(
-        token,
-        pageNumber,
-        pageSize,
-        filter
+        token
       );
       dispatch({ type: "SET_FILTERED_CONTACTS", payload: response });
       dispatch({ type: "SET_CONTACTS", payload: response });
@@ -51,6 +51,7 @@ export const StagingProvider: FC<Props> = ({ children }) => {
     <StagingContext.Provider
       value={{
         ...state,
+        setPaginates,
         setFilteredContacts,
         getContacts,
       }}

@@ -12,30 +12,31 @@ import { TabContent } from "../ui/TabContent";
 import { getSession } from "next-auth/react";
 
 export const Contacts = ({}) => {
-  const { filteredContacts, contacts, getContacts } =
+  const { filteredContacts, contacts, getContacts, paginates, setPaginates } =
     useContext(StagingContext);
   const [pageNumber, setPageNumber] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const [contact, setContact] = useState<IContact>();
   const { search } = useContext(UiContext);
-  const [paginates, setPaginates] = useState<IContact[]>(
-    contacts.slice(0, 9)
-  );
 
   const setInitialState = useCallback(async () => {
     const session = await getSession();
     const user: any = session?.user;
     setIsLoading(true);
-    getContacts(user?.token, 1, 100000).finally(() => {
-      setIsLoading(false);
-    });
-  }, [getContacts]);
+    getContacts(user?.token)
+      .then((contacts) => {
+        setPaginates(contacts.slice(0, 9));
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  }, [getContacts, setPaginates]);
 
   useEffect(() => {
     setInitialState();
   }, [setInitialState]);
-  
+
   const pagination = (pageNumber: number, pageSize: number) => {
     const start = (pageNumber - 1) * pageSize;
     const end = start + pageSize;
@@ -93,7 +94,7 @@ export const Contacts = ({}) => {
             </div>
           )
         ) : (
-          <Card 
+          <Card
             contact={contact}
             backClick={() => setOpen(false)}
             back={true}
