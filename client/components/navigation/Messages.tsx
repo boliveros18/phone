@@ -1,4 +1,4 @@
-import { FC, useState, useContext } from "react";
+import { FC, useState, useContext, useEffect } from "react";
 import { PencilSquareIcon } from "@heroicons/react/24/outline";
 import { TwilioContext } from "@/context/twilio";
 import { UiContext } from "@/context/ui";
@@ -25,6 +25,8 @@ export const Messages: FC<Props> = ({}) => {
     setTypeMessage,
   } = useContext(UiContext);
   const [paginates, setPaginates] = useState<IMessage[]>(messages.slice(0, 6));
+
+  useEffect(() => {}, [newMessage]);
 
   const pagination = (pageNumber: number, pageSize: number) => {
     const start = (pageNumber - 1) * pageSize;
